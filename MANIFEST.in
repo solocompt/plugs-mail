@@ -1,0 +1,2 @@
+recursive-include plugs_mail/templates *
+recursive-include plugs_mail/templatetags *
