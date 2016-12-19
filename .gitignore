@@ -1,4 +1,4 @@
 *~
 __pycache__
 dist
-plugs_core.egg-info
+*.egg-info
