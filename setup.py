@@ -9,7 +9,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 setup(
     name='plugs-mail',
     package = 'plugs_mail',
-    version='0.1.1',
+    version='0.1.2',
     packages=find_packages(),
     include_package_data=True,
     license='MIT',
@@ -20,7 +20,8 @@ setup(
     author_email='ricardolobo@soloweb.pt',
     install_requires = [
         'plugs-core>=0.1.0',
-        'django-post-office>=2.0.7'
+        'django-post-office>=2.0.7',
+        'cssselect>=1.0.0'
     ],
     classifiers=[
         'Environment :: Web Environment',
