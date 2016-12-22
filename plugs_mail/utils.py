@@ -2,6 +2,8 @@
 Plugs Mail Utils
 """
 
+from django.contrib.auth import get_user_model
+
 def to_email(email_class, email, **data):
     """
     Send email to specified email address
