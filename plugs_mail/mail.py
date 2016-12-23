@@ -11,7 +11,6 @@ from plugs_core import utils
 
 from plugs_mail.settings import app_settings
 
-print('these are our settings', app_settings)
 
 LOGGER = logging.getLogger(__name__)
 
