@@ -58,10 +58,13 @@ class PlugsMail(object):
     def get_context(self):
         """
         Create a dict with the context data
+        context is not required, but if it
+        is defined it should be a tuple
         """
-        assert isinstance(self.context, tuple), 'Expected a Tuple not {0}'.format(type(self.context))
         if not self.context:
             return
+        else:
+            assert isinstance(self.context, tuple), 'Expected a Tuple not {0}'.format(type(self.context))
         for model in self.context:
             model_cls = utils.get_model_class(model)
             key = utils.camel_to_snake(model_cls.__name__)
@@ -75,17 +78,29 @@ class PlugsMail(object):
         """
         return {}
 
-    def send(self, to, **data):
+
+    def get_context_data(self):
+        """
+        Context Data is equal to context + extra_context
+        Merge the dicts context_data and extra_context and
+        update state
+        """
+        self.get_context()
+        self.context_data.update(self.get_extra_context())
+        return self.context_data
+
+    def send(self, to, language=None, **data):
         """
         This is the method to be called
         """
         self.data = data
-        self.get_context()
-        # merge the dicts context_data and extra_context
-        self.context_data.update(self.get_extra_context())
+        self.get_context_data()
         if app_settings['SEND_EMAILS']:
             try:
-                mail.send(to, template=self.template, context=self.context_data)
+                if language:
+                    mail.send(to, template=self.template, context=self.context_data, language=language)
+                else:
+                    mail.send(to, template=self.template, context=self.context_data)
             except EmailTemplate.DoesNotExist:
                 msg = 'Trying to use a non existent email template {0}'.format(self.template)
                 LOGGER.error('Trying to use a non existent email template {0}'.format(self.template))
