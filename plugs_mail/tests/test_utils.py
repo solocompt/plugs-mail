@@ -75,3 +75,23 @@ class TestUtils(TestCase):
         del TestEmailClass.context
         mail = TestEmailClass()
         mail.send('example@example.com')
+
+
+    def test_raise_exception_if_template_language_is_missing(self):
+        """
+        Ensures exception raised of template file is missing language code
+        """
+        command = load_email_templates.Command()
+        file_ = '/var/www/src/plugs-auth/plugs_auth/templates/emails/account_activated.html'
+        with self.assertRaisesMessage(Exception, 'Template file must end in ISO_639-1 language code.'):
+            language = command.get_template_language(file_)
+
+
+    def test_email_language_determined_from_template_file(self):
+        """
+        Ensures template language is determined from template file
+        """
+        command = load_email_templates.Command()
+        file_ = '/var/www/src/plugs-auth/plugs_auth/templates/emails/account_activated_pt.html'
+        language = command.get_template_language(file_)
+        self.assertEqual(language, 'pt')

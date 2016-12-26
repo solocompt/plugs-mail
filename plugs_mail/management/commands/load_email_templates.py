@@ -1,4 +1,5 @@
 import inspect
+from pathlib import Path
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
@@ -31,13 +32,16 @@ class Command(BaseCommand):
                 pass
         return templates
 
+    def get_members(self, app):
+        return inspect.getmembers(app)
+
     def get_plugs_mail_subs(self, app):
         """
         Returns a list of tuples, but it should
         return a list of dicts
         """
         classes = []
-        members = inspect.getmembers(app)
+        members = self.get_members(app)
         for member in members:
             name, cls = member
             if inspect.isclass(cls) and issubclass(cls, PlugsMail) and name != 'PlugsMail':
@@ -50,6 +54,27 @@ class Command(BaseCommand):
                     raise AttributeError('Email class must specify email subject and description.')
         return classes
 
+    def get_template_language(self, file_):
+        """
+        Return the template language
+        Every template file must end in
+        with the language code, and the 
+        code must match the ISO_6301 lang code
+        https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
+        valid examples:
+
+        account_created_pt.html
+        payment_created_en.txt
+        """
+        stem = Path(file_).stem
+        language_code = stem.split('_')[-1:][0]
+        if len(language_code) != 2:
+            # naive and temp implementation
+            # check if the two chars correspond to one of the
+            # available languages
+            raise Exception('Template file must end in ISO_639-1 language code.')
+        return language_code.lower()
+
     def create_templates(self, templates):
         """
         Gets a list of templates to insert into the database
@@ -61,13 +86,15 @@ class Command(BaseCommand):
                 # if does not exist, try to find a default template
                 dir_ = location[:-9] + 'templates/emails/'
                 file_ = dir_ + utils.camel_to_snake(name) + '.html'
+
                 text = self.open_file(file_)
                 data = {
                     'name': utils.camel_to_snake(name).upper(),
                     'html_content': text,
                     'content': self.text_version(text),
                     'subject': subject,
-                    'description': description
+                    'description': description,
+                    'language': self.get_template_language(file_)
                 }
                 models.EmailTemplate.objects.create(**data)
 
