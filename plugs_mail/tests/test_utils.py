@@ -2,10 +2,21 @@
 Testing Mail Utils
 """
 
+from mock import patch
+
 from django.test import TestCase
 
 from plugs_mail.mail import PlugsMail
 from plugs_mail.management.commands import load_email_templates
+
+template = 'SUBJECT: Subject line!\n' \
+           '\n' \
+           '{% extends "base.html" %}\n' \
+           '{% block content %}\n' \
+           '<p>Hello,</p>\n' \
+           '<p>Test Message.</p>\n' \
+           '{% endblock %}\n'
+
 
 class TestEmailClass(PlugsMail):
     template = 'TEMPLATE_NAME'
@@ -95,3 +106,26 @@ class TestUtils(TestCase):
         file_ = '/var/www/src/plugs-auth/plugs_auth/templates/emails/account_activated_pt.html'
         language = command.get_template_language(file_)
         self.assertEqual(language, 'pt')
+
+
+    def test_email_subject_determined_from_template(self):
+        """
+        Ensures template subject is determined from template content
+        """
+        command = load_email_templates.Command()
+        subject = command.get_subject(template)
+        self.assertEqual(subject, 'Subject line!')
+
+
+    def test_email_content_determined_from_template(self):
+        """
+        Ensures template content is determined from template content
+        """
+        command = load_email_templates.Command()
+        html_content = command.get_html_content(template)
+        expected = '{% extends "base.html" %}\n' \
+                   '{% block content %}\n' \
+                   '<p>Hello,</p>\n' \
+                   '<p>Test Message.</p>\n' \
+                   '{% endblock %}\n'
+        self.assertEqual(html_content, expected)
