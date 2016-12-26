@@ -16,7 +16,11 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         templates = self.get_apps()
-        self.create_templates(templates)
+        count = self.create_templates(templates)
+        if count:
+            self.stdout.write(self.style.SUCCESS('Successfully loaded %s email templates' % count))
+        else:
+            self.stdout.write(self.style.SUCCESS('No email templates to load'))
 
     def get_apps(self):
         """
@@ -118,6 +122,7 @@ class Command(BaseCommand):
         """
         Gets a list of templates to insert into the database
         """
+        count = 0
         for template in templates:
             if not self.template_exists_db(template):
                 name, location, description, language = template
@@ -131,7 +136,10 @@ class Command(BaseCommand):
                     'description': description,
                     'language': language
                 }
-                models.EmailTemplate.objects.create(**data)
+                if models.EmailTemplate.objects.create(**data):
+                    count += 1
+        return count
+
 
     def text_version(self, html):
         """
