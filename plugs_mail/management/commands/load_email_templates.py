@@ -10,17 +10,31 @@ from post_office import models
 
 from plugs_core import utils
 from plugs_mail.mail import PlugsMail
+from plugs_mail.settings import app_settings as plugs_mail_settings
 
 
 class Command(BaseCommand):
 
+    overrides = {}
+
     def handle(self, *args, **options):
+        self.override_default_templates()
         templates = self.get_apps()
         count = self.create_templates(templates)
         if count:
             self.stdout.write(self.style.SUCCESS('Successfully loaded %s email templates' % count))
         else:
             self.stdout.write(self.style.SUCCESS('No email templates to load'))
+
+    def override_default_templates(self):
+        """
+        Override the default emails already defined by other apps
+        """
+        if plugs_mail_settings['OVERRIDE_TEMPLATE_DIR']:
+            dir_ = plugs_mail_settings['OVERRIDE_TEMPLATE_DIR']
+            for file_ in os.listdir(dir_):
+                if file_.endswith(('.html', 'txt')):
+                    self.overrides[file_] = dir_
 
     def get_apps(self):
         """
@@ -40,6 +54,9 @@ class Command(BaseCommand):
     def get_members(self, app):
         return inspect.getmembers(app)
 
+    def get_templates_files_in_dir(self, dir_):
+        return os.listdir(dir_)
+
     def get_template_files(self, location, class_name):
         """
         Multilanguage support means that for each template
@@ -50,9 +67,12 @@ class Command(BaseCommand):
         template_name = utils.camel_to_snake(class_name)
         dir_ = location[:-9] + 'templates/emails/'
         files_ = []
-        for file_ in os.listdir(dir_):
-            if file_.startswith(template_name) and file_.endswith('.html') or file_.endswith('.txt'):
-                files_.append(dir_ + file_)
+        for file_ in self.get_templates_files_in_dir(dir_):
+            if file_.startswith(template_name) and file_.endswith(('.html', '.txt')):
+                if file_ in self.overrides:
+                    files_.append(self.overrides[file_] + file_)
+                else:
+                    files_.append(dir_ + file_)
         return files_
 
     def get_plugs_mail_classes(self, app):
