@@ -114,7 +114,7 @@ class Command(BaseCommand):
             # TODO naive and temp implementation
             # check if the two chars correspond to one of the
             # available languages
-            raise Exception('Template file must end in ISO_639-1 language code.')
+            raise Exception('Template file `%s` must end in ISO_639-1 language code.' % file_)
         return language_code.lower()
 
     def get_subject(self, text):
