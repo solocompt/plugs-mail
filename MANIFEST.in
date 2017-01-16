@@ -1,4 +1,6 @@
-recursive-include plugs_mail/templates *.html
-recursive-exclude * __pycache__
-recursive-exclude * *.py[co]
-recursive-exclude * *~
+include AUTHORS.rst
+include CONTRIBUTING.rst
+include HISTORY.rst
+include LICENSE
+include README.rst
+recursive-include plugs_mail *.html *.png *.gif *js *.css *jpg *jpeg *svg *py
