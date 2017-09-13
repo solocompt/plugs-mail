@@ -46,18 +46,18 @@ history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 setup(
     name='plugs-mail',
     version=version,
-    description="""Your project description goes here""",
+    description="""Declarative and Templated Emails""",
     long_description=readme + '\n\n' + history,
-    author='Ricardo Lobo',
-    author_email='ricardolobo@soloweb.pt',
-    url='https://github.com/ricardolobo/plugs-mail',
+    author='Solo',
+    author_email='geral@solo.com.pt',
+    url='https://github.com/solocompt/plugs-mail',
     packages=[
         'plugs_mail',
     ],
     include_package_data=True,
     install_requires=[
-        'plugs-core>=0.1.0',
-        'django-post-office>=2.0.7',
+        'plugs-core>=0.1.0,<0.3.0',
+        'django-post-office>=3.0.3,<4.0.0',
         'cssselect>=1.0.0'
     ],
     license="MIT",
@@ -65,15 +65,10 @@ setup(
     keywords='plugs-mail',
     classifiers=[
         'Development Status :: 3 - Alpha',
-        'Framework :: Django',
-        'Framework :: Django :: 1.9',
+        'Framework :: Django :: 1.11',
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: BSD License',
+        'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3'
     ],
 )
