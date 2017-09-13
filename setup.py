@@ -56,7 +56,7 @@ setup(
     ],
     include_package_data=True,
     install_requires=[
-        'plugs-core>=0.1.0,<0.3.0',
+        'plugs-core>=0.1.0,<1.0.0',
         'django-post-office>=3.0.3,<4.0.0',
         'cssselect>=1.0.0'
     ],
